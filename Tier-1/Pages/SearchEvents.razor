@@ -1,0 +1,135 @@
+@page "/searchevents"
+
+@using DiningApp.Data
+@using System.ComponentModel.DataAnnotations
+@inject IEventService EventService
+
+<h1 class="display-4">Search events in your area</h1>
+
+<br style=“line-height:50;”>
+
+
+
+<!--Search for-->
+ <EditForm Model="@searchModel" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+
+
+    <InputText class="form-control" placeholder="City" id="city" style="width: 400px" @bind-Value="searchModel.City"/><br><br> 
+                       
+
+</EditForm>
+
+                  <button class="btn btn-primary" style="width:200px" @onclick="Filter">Search</button>
+
+                      
+
+                       @if (events == null)
+                       {
+                           <p>
+                               <em>Loading...</em>
+                           </p>
+                       }
+                       else
+                       {
+                           <div class="container-fluid">
+                               <div class="row">
+                                   <div class="col-md-1">
+                                       <h5> Host</h5>
+                                   </div>
+                                   <div class="col-md-2">
+                                       <h5> Location</h5>
+                                   </div>
+                                   <div class="col-md-2">
+                                       <h5> Date</h5>
+                                   </div>
+                                   <div class="col-md-1">
+                                       <h5> Guests</h5>
+                                   </div>
+                                   <div class="col-md-6">
+                                       <h5> Description</h5>
+                                   </div>
+
+                               </div>
+
+
+                               @foreach (var newEvent in events)
+                               {
+                                   <a class="selectablelink" href="/eventdetails/@newEvent.EventID" >
+                                          <div class="row selectable">
+                                              <div class="col-md-1 tablecells">
+                                                  @newEvent.UserId
+                                              </div>
+                                              <div class="col-md-2 tablecells">
+                                                  @newEvent.City
+                                              </div>
+                                              <div class="col-md-2 tablecells">
+                                                  @newEvent.Date
+                                              </div>
+                                              <div class="col-md-1 tablecells">
+                                                  @newEvent.NrOfGuests
+                                              </div>
+                                              <div class="col-md-6 tablecells">
+                                                  @newEvent.Description
+                                              </div>
+
+                                          </div>
+                                      </a>
+                               }
+
+                                      </div>
+                       }
+
+                                      @code {
+
+                                          List<Event> events = new List<Event>();
+                                          //Event[] events;
+
+                                          private SearchModel searchModel { get; set; } = new SearchModel();
+
+                                          protected override async Task OnInitializedAsync()
+                                          {
+                                              events = await EventService.GetEventListAsync();
+                                          //events = await DummyEventService.GetEventAsync(DateTime.Now);
+                                          }
+
+                                          void ViewDetails()
+                                          {
+                                          }
+
+                                          private void HandleValidSubmit()
+                                          {
+                                              Console.WriteLine("OnValidSubmit");
+                                          }
+ 
+                                          async Task Filter()
+                                          {
+                                              
+                                              events = await EventService.SearchEventsAsync(searchModel.City);
+                                            // only for testing  
+                                            /*
+                                              List<Event> filtered = new List<Event>();
+                                              Console.WriteLine("[INFO]*****************************************************");
+                                              Console.WriteLine(searchModel.City);
+                                              
+                                              
+                                              foreach (var other in events)
+                                              {
+                                                  if (other.City.Equals(@searchModel.City))
+                                                  {
+                                                      filtered.Add(other);
+                                                  }
+                                              }
+                                              events = filtered;
+                                              */
+                                             
+                                          }
+                                          
+                                          public class SearchModel
+                                          {
+                                              [Required]
+                                              public string City { get; set; } 
+                                          }
+
+                                      }

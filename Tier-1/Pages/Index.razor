@@ -1,0 +1,20 @@
+﻿@page "/"
+@inject ToastService toastService
+
+
+<h1 class="display-4">Dining with strangers</h1>
+
+
+
+<AuthorizeView>
+    <Authorized>
+        <p>Logged in</p>
+    </Authorized>
+    <NotAuthorized>
+        <p>Not logged in</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+

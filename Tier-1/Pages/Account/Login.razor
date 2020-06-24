@@ -1,0 +1,44 @@
+@page "/login"
+@inject IJSRuntime jsRuntime
+
+
+<h1 class="display-4">Login</h1>
+
+<div class="form-group">
+    <label>Email address:</label>
+    <input class="form-control" placeholder="email" type="email" @bind-value="_username"/>
+</div>
+<div class="form-group">
+    <label>Password</label>
+    <input class="form-control" type="password" placeholder="password" @bind-value="_password"/>
+</div>
+
+<button class="btn btn-primary" @onclick="PerformLogin">Login</button>
+
+
+
+
+@code {
+
+    private string _username;
+    private string _password;
+    
+    public async Task PerformLogin()
+    {
+        Console.WriteLine("Login here");
+        
+        // TODO get and verify username and password here against database
+        
+        var interop = new Interop(jsRuntime);
+        string antiforgerytoken = await interop.GetElementByName("__RequestVerificationToken");
+        
+        // Here I provide fields matching the arguments of my login method, in LoginRequester.cshtml.cs
+        var fields = new { __RequestVerificationToken = antiforgerytoken, username = _username, password = _password};
+        
+        // Here I make a call to the loginRequester.cshtml.cs, the post method, with fields as argument.
+        // it happens through the Interop.cs class
+        await interop.SubmitForm("/loginRequester/", fields);
+        
+    }
+
+}

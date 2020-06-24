@@ -1,0 +1,389 @@
+@page "/editevent"
+@page "/editevent/{eventID:int}"
+@attribute [Authorize(Policy = "MustBeLoggedIn") ]
+
+@using DiningApp.Data
+@using Microsoft.AspNetCore.Blazor.Services
+@using System.Threading.Tasks
+
+@inject NavigationManager NavigationManager
+@inject DiningApp.Data.IEventService EventService
+@inject ToastService toastService
+
+
+
+<h1 class="display-4">Edit your event @EventID</h1>
+
+  <EditForm Model="@details" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+<dl class="row">
+
+  <dt class="col-sm-3">Location</dt>
+  <dd class="col-sm-9">
+     
+     
+     @if(edit==false){
+    <p>City: @details.City</p>
+     }
+     else{
+          <p>City: 
+       <InputText  class="form-control" placeholder = "City" id="city" @bind-Value="details.City" />
+    </p>
+
+     }
+
+
+
+     @if(edit==false){
+    <p>Street: @details.Street</p>
+     }
+     else{
+          <p>Street: 
+       <InputText  class="form-control" placeholder = "Street" id="street" @bind-Value="details.Street" />
+    </p>
+
+     }
+
+
+     @if(edit==false){
+    <p>Building number: @details.BuildingNumber</p>
+     }
+      else{
+          <p>Building number: 
+       <InputNumber  class="form-control" placeholder = "Building number" id="bn" @bind-Value="details.BuildingNumber" />
+    </p>
+      }
+    </dd>
+
+    <dt class="col-sm-3">Date</dt>
+    <dd class="col-sm-9">
+     @if(edit==false){
+    <p> @details.Date</p>
+     }
+     else{
+    <InputDate  class="form-control"  @bind-Value="details.Date" />   
+     }
+
+    @if(edit==false){
+    <p>Event starts at: @details.EventStart</p>
+    }
+    else{
+     <p>Event starts at:</p>
+     <InputText  class="form-control" placeholder = "Event start"  @bind-Value="details.EventStart" />    
+    }
+     @if(edit==false){
+    <p>Event ends at: @details.EventEnd</p>
+     }
+     else{
+       <p>Event ends at:</p>
+     <InputText  class="form-control" placeholder = "Event start"  @bind-Value="details.EventEnd" />     
+     }
+  </dd>
+  <dt class="col-sm-3">Description</dt>
+  @if(edit==false){
+  <dd class="col-sm-9">@details.Description</dd>
+  }
+  else{
+      <dd class="col-sm-9">
+    <InputTextArea  class="form-control" placeholder = "Description"  @bind-Value="details.Description" />     
+    </dd> 
+  }
+   <dt class="col-sm-3">Number of guests</dt>
+   @if(edit==false){
+  <dd class="col-sm-9">@details.NrOfGuests
+  <span class="oi oi-person" aria-hidden="true"></span>    
+  </dd>
+   }
+   else{
+   <dd class="col-sm-9">
+   <InputNumber class="form-control"  @bind-Value="details.NrOfGuests" /> 
+  </dd>
+    
+   }
+
+  
+
+   <dt class="col-sm-3">Entry fees</dt>
+  @if(edit==false){
+  <dd class="col-sm-9">@details.EntryFee
+   <span class="oi oi-credit-card" aria-hidden="true"></span>     
+  </dd>
+  }
+  else{
+  <dd class="col-sm-9">    
+  <InputNumber class="form-control"  @bind-Value="details.EntryFee" />   
+  </dd> 
+  }
+
+
+
+
+    <dt class="col-sm-3">Age limit</dt>
+    @if(edit==false){
+    <dd class="col-sm-9">@details.AgeLimit</dd>
+    }
+    else{
+    <dd class="col-sm-9">
+    <InputNumber class="form-control"  @bind-Value="details.AgeLimit" />  
+    </dd>
+    }
+
+
+
+
+   <dt class="col-sm-3">Starter</dt>
+   @if(edit==false){
+   <dd class="col-sm-9">@details.Starter</dd>
+   }
+   else{
+    <dd class="col-sm-9">
+   <InputText  class="form-control" placeholder = "Starter"  @bind-Value="details.Starter" /> 
+    </dd>
+   }
+
+
+
+
+  <dt class="col-sm-3">Main course</dt>
+  @if(edit==false){
+  <dd class="col-sm-9">@details.MainCourse</dd>
+  }
+  else{
+   <dd class="col-sm-9">
+  <InputText  class="form-control" placeholder = "Main course"  @bind-Value="details.MainCourse" /> 
+    </dd>
+  }
+
+
+
+
+
+  <dt class="col-sm-3">Dessert</dt>
+  @if(edit==false){
+  <dd class="col-sm-9">@details.Dessert</dd>
+  }
+  else{
+    <dd class="col-sm-9">
+ <InputText  class="form-control" placeholder = "Dessert"  @bind-Value="details.Dessert" /> 
+    </dd>
+  }
+
+
+
+
+
+  
+  <dt class="col-sm-3"></dt>
+  <dd class="col-sm-9"></dd>
+
+
+
+
+  @if(@details.Pets==true)
+{
+      <dt class="col-sm-3">Pets</dt>
+        @if(edit==false){
+       <dd class="col-sm-9">
+       <span class="oi oi-check" aria-hidden="true"></span> 
+       </dd>
+        }
+        else{
+        <dd class="col-sm-9">
+        <InputCheckbox  class="form-control"  @bind-Value="details.Pets" />
+       </dd>   
+        }
+}
+
+
+
+
+
+else if(@details.Pets==false)
+{
+      <dt class="col-sm-3">Pets</dt>
+    @if(edit==false){
+      <dd class="col-sm-9">
+         <span class="oi oi-x" aria-hidden="true"></span> 
+         </dd>
+    }
+    else{
+      <dd class="col-sm-9">
+        <InputCheckbox  class="form-control"  @bind-Value="details.Pets" />
+       </dd>     
+    }
+      
+}
+
+
+
+
+@if(@details.Drinks==true)
+{
+      <dt class="col-sm-3">Drinks</dt>
+    @if(edit==false){
+      <dd class="col-sm-9">
+      <span class="oi oi-check" aria-hidden="true"></span> 
+      </dd>
+    }
+    else{
+     <dd class="col-sm-9">
+        <InputCheckbox  class="form-control"  @bind-Value="details.Drinks" />
+       </dd>   
+    }
+      
+}
+
+
+
+
+
+else if(@details.Drinks==false)
+{
+      <dt class="col-sm-3">Drinks</dt>
+      @if(edit==false){
+      <dd class="col-sm-9">
+     <span class="oi oi-x" aria-hidden="true"></span> 
+      </dd>
+      }
+      else{
+      <dd class="col-sm-9">
+        <InputCheckbox  class="form-control"  @bind-Value="details.Drinks" />
+       </dd>   
+    }
+
+    
+}
+
+
+
+
+
+@if(@details.Entertainment==true)
+{
+      <dt class="col-sm-3">Entertainment</dt>
+      @if(edit==false){
+      <dd class="col-sm-9">
+      <span class="oi oi-check" aria-hidden="true"></span> 
+      </dd>
+      }
+      else{
+      <dd class="col-sm-9">
+        <InputCheckbox  class="form-control"  @bind-Value="details.Entertainment" />
+       </dd>   
+    }
+     
+}
+
+
+
+
+
+
+else if(@details.Entertainment==false)
+{
+      <dt class="col-sm-3">Entertainment</dt>
+      @if(edit==false){
+      <dd class="col-sm-9">
+     <span class="oi oi-x" aria-hidden="true"></span> 
+      </dd>
+      }
+      else{
+      <dd class="col-sm-9">
+        <InputCheckbox  class="form-control"  @bind-Value="details.Entertainment" />
+       </dd>   
+    }
+    
+}
+<br><br>
+   
+
+ </dl>
+ @if(confirm==true){ 
+   <div class="row">
+       <div class="col-md-12 p-3 mb-2 bg-warning text-dark">
+           Confirm that you want to cancel your event. Notification will be sent to you guests
+       </div>
+   </div>    
+   <button class="btn btn-primary" @onclick="ConfirmEventCancellation">Confirm cancellation</button>
+   }
+else{
+@if(edit==false){
+<button class="btn btn-primary"  @onclick="Edit">Edit</button>
+<button class="btn btn-primary"  @onclick="CancelEventButtonClicked">Cancel event</button>
+}
+@if(edit == true)
+{
+   <button class="btn btn-primary" @onclick="HandleValidSubmit">Save changes</button>
+   <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
+}
+}
+  </EditForm>
+
+
+
+@code{
+    public bool confirm{get;set;}
+    public bool edit {get;set;}
+    Event details = new Event();
+    [Parameter]
+    public int EventID {get;set;}
+  
+
+    protected override async Task OnInitializedAsync() {
+       
+       details = await EventService.GetEventDetailsByID(EventID);
+       Console.WriteLine(EventID);
+
+    }
+  
+    
+   
+    void Edit()
+    { 
+      edit = true;
+
+    }
+
+
+    async Task SaveChanges()
+    {
+        details.EventID = EventID;
+
+         await EventService.UpdateEvent(details);
+
+        Console.WriteLine(details.ToString());
+        NavigationManager.NavigateTo("success");
+        toastService.ShowToast("The event has been canceled.", ToastLevel.Success);
+       
+    }
+
+
+    void Cancel(){}
+
+
+
+    async Task HandleValidSubmit()
+    {
+     await SaveChanges();
+    }
+
+
+
+    async Task ConfirmEventCancellation()
+    {
+      details.EventID = EventID;
+      Console.WriteLine("[BUTTON] CONFIRM CANCELATION");
+      await EventService.CancelEvent(details);
+
+      NavigationManager.NavigateTo("success");
+      toastService.ShowToast("The event has been canceled.", ToastLevel.Success);
+     
+    }
+
+    void CancelEventButtonClicked()
+    {
+        confirm = true;
+    }
+
+}

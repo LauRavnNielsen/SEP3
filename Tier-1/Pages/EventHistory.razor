@@ -1,0 +1,59 @@
+@page "/eventhistory"
+
+
+@using DiningApp.Data
+@inject IEventService EventService
+
+<h1 class="display-4">Your event history</h1>
+<br style = “line-height:100;”>
+<button class = "btn btn-primary" style="width:200px">All</button>
+<button class = "btn btn-primary" style="width:200px">Upcoming</button>
+<button class = "btn btn-primary" style="width:200px">Past</button>
+<br style = “line-height:100;”>
+
+
+@if (events == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Host</th>
+                <th>Location</th>
+                <th>Date</th>
+                <th>Number of guests</th>
+                <th>Description</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+             @foreach (var newEvent in events)
+            {
+                <tr>
+                    <td>@newEvent.UserId</td>
+                    <td>@newEvent.City</td>
+                    <td>@newEvent.Date</td>
+                    <td>@newEvent.NrOfGuests</td>
+                    <td>@newEvent.Description</td>
+                    <td>
+                     <a href ="/editevent/@newEvent.EventID" class="oi oi-pencil" aria-hidden="true"></a>   
+                    </td>
+                </tr>
+            }
+ 
+
+        </tbody>
+    </table>
+}
+
+@code {
+    List<Event> events = new List<Event>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        events = await EventService.GetEventListAsync();
+    }
+}

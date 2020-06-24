@@ -1,0 +1,15 @@
+@page "/gettest"
+@inject DiningApp.Data.IEventService EventService
+<p> @s </p>
+
+
+
+@code{
+    private string s;
+
+    protected override async Task OnInitializedAsync()
+    {
+        s = await EventService.SearchEventsTestAsync("David");
+    }
+
+}

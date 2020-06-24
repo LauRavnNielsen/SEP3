@@ -1,0 +1,129 @@
+@page "/eventdetails"
+@page "/eventdetails/{eventID:int}"
+@using DiningApp.Data
+@inject IEventService EventService
+@inject ToastService toastService
+
+
+@if (EventID == null)
+{
+    <a href="/searchevents">Go back to search events</a>
+}
+
+<h1 class="display-4">Event details @EventID </h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Host</dt>
+    <dd class="col-sm-9">The event is hosted by @details.UserId</dd>
+
+    <dt class="col-sm-3">Location</dt>
+    <dd class="col-sm-9">
+        <p>City: @details.City</p>
+        <p>Street: @details.Street</p>
+        <p>Building number: @details.BuildingNumber</p>
+    </dd>
+
+    <dt class="col-sm-3">Date</dt>
+    <dd class="col-sm-9">
+        <p> @details.Date</p>
+        <p>Event starts at: @details.EventStart</p>
+        <p>Event ends at: @details.EventEnd</p>
+    </dd>
+    <dt class="col-sm-3">Description</dt>
+    <dd class="col-sm-9">@details.Description</dd>
+
+    <dt class="col-sm-3">Number of guests</dt>
+    <dd class="col-sm-9">
+        @details.NrOfGuests
+        <span class="oi oi-person" aria-hidden="true"></span>
+    </dd>
+
+    <dt class="col-sm-3">Entry fees</dt>
+    <dd class="col-sm-9">
+        @details.EntryFee
+        <span class="oi oi-credit-card" aria-hidden="true"></span>
+    </dd>
+    <dt class="col-sm-3">Age limit</dt>
+    <dd class="col-sm-9">@details.AgeLimit</dd>
+
+    <dt class="col-sm-3">Starter</dt>
+    <dd class="col-sm-9">@details.Starter</dd>
+
+    <dt class="col-sm-3">Main course</dt>
+    <dd class="col-sm-9">@details.MainCourse</dd>
+
+    <dt class="col-sm-3">Dessert</dt>
+    <dd class="col-sm-9">@details.Dessert</dd>
+
+
+    <dt class="col-sm-3"></dt>
+    <dd class="col-sm-9"></dd>
+
+    @if (@details.Pets == true)
+    {
+        <dt class="col-sm-3">Pets</dt>
+        <dd class="col-sm-9">
+            <span class="oi oi-check" aria-hidden="true"></span>
+        </dd>
+    }
+    else if (@details.Pets == false)
+    {
+        <dt class="col-sm-3">Pets</dt>
+        <dd class="col-sm-9">
+            <span class="oi oi-x" aria-hidden="true"></span>
+        </dd>
+    }
+    @if (@details.Drinks == true)
+    {
+        <dt class="col-sm-3">Drinks</dt>
+        <dd class="col-sm-9">
+            <span class="oi oi-check" aria-hidden="true"></span>
+        </dd>
+    }
+    else if (@details.Drinks == false)
+    {
+        <dt class="col-sm-3">Drinks</dt>
+        <dd class="col-sm-9">
+            <span class="oi oi-x" aria-hidden="true"></span>
+        </dd>
+    }
+    @if (@details.Entertainment == true)
+    {
+        <dt class="col-sm-3">Entertainment</dt>
+        <dd class="col-sm-9">
+            <span class="oi oi-check" aria-hidden="true"></span>
+        </dd>
+    }
+    else if (@details.Entertainment == false)
+    {
+        <dt class="col-sm-3">Entertainment</dt>
+        <dd class="col-sm-9">
+            <span class="oi oi-x" aria-hidden="true"></span>
+        </dd>
+    }
+    <br><br>
+    <div class="col text-center">
+        <button class="btn btn-primary" @onclick="RequestToJoin">Request to join the event</button>
+                </div>
+
+                </dl>
+
+
+                @code {
+
+                    Event details = new Event();
+
+                    [Parameter]
+                    public int EventID { get; set;}
+
+                    protected override async Task OnInitializedAsync()
+                    {
+                        details = await EventService.GetEventDetailsByID(EventID);
+                        Console.WriteLine(EventID);
+                    }
+
+                    void RequestToJoin()
+                    {
+                    }
+
+                }

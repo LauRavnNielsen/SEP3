@@ -1,0 +1,152 @@
+@page "/accountsettings"
+@attribute [Authorize(Policy = "MustBeLoggedIn")]
+@using DiningApp.Data
+@using System
+@using System.Threading.Tasks
+@using Microsoft.AspNetCore.Http
+
+@using Microsoft.AspNetCore.Blazor.Services
+
+@inject DiningApp.Data.IUserService UserService
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor accessor
+
+
+<AuthorizeView>
+    <Authorized>
+        <h1 class="display-4">Account settings: @context.User.Identity.Name</h1>
+        @(Email = context.User.Identity.Name)
+    </Authorized>
+</AuthorizeView>
+
+
+<EditForm Model="@user" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+
+
+    <dl class="row">
+        <dt class="col-sm-3">First name</dt>
+        @if (edit == true)
+        {
+            <dd class="col-sm-9">
+                <InputText class="form-control" style="width: 400px" @bind-Value="user.FirstName"/>
+                           </dd>
+        }
+        else
+        {
+            <dd class="col-sm-9">@user.FirstName</dd>
+        }
+                           <dt class="col-sm-3">Last name</dt>
+                           @if (edit == true)
+                           {
+                               <dd class="col-sm-9">
+                                   <InputText class="form-control" style="width: 400px" @bind-Value="user.LastName"/>
+                                              </dd>
+                           }
+                           else
+                           {
+                               <dd class="col-sm-9">@user.LastName</dd>
+                           }
+
+
+                                              <dt class="col-sm-3">Email address</dt>
+                                              @if (edit == true)
+                                              {
+                                                  <dd class="col-sm-9">
+                                                      <InputText class="form-control" style="width: 400px" type="email" @bind-Value="user.EmailAddress"/>
+                                                                 </dd>
+                                              }
+                                              else
+                                              {
+                                                  <dd class="col-sm-9">@user.EmailAddress</dd>
+                                              }
+
+
+                                                                 <dt class="col-sm-3">Password</dt>
+                                                                 <dd class="col-sm-9">
+                                                                     <button class="btn btn-primary" @onclick="UpdatePassword"> Update password</button>
+                                                                             </dd>
+
+
+                                                                             <br style=“line-height:100;”>
+
+                                                                             </dl>
+
+                                                                             @if (edit == true)
+                                                                             {
+                                                                                 <div class="row">
+                                                                                     <div class="col-md-12 p-3 mb-2 bg-warning text-dark">
+                                                                                         Confirm that entered information is correct
+                                                                                     </div>
+                                                                                 </div>
+                                                                                 <button class="btn btn-primary" @onclick="UpdateUser">Confirm</button>
+                                                                                 <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
+                                                                             }
+                                                                             else
+                                                                             {
+                                                                                 <button class="btn btn-primary" @onclick="Edit">Edit</button>
+                                                                                 <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
+                                                                                 // <button class="btn btn-primary" @onclick="GetInfo">Get info</button>
+                                                                             }
+                                                                                         </EditForm>
+
+
+                                                                                         @code {
+
+                                                                                             public bool confirm { get; set; }
+                                                                                             public bool edit { get; set; }
+
+                                                                                             [Parameter]
+                                                                                             public string Email { get; set; }
+
+
+                                                                                             private User user = new User();
+                                                                                             private User other = new User();
+
+                                                                                             public IList<User> users = new List<User>();
+
+                                                                                             void Edit()
+                                                                                             {
+                                                                                                 edit = true;
+                                                                                             }
+
+                                                                                             void UpdatePassword()
+                                                                                             {
+                                                                                             }
+
+                                                                                             private void HandleValidSubmit()
+                                                                                             {
+                                                                                                 Console.WriteLine("OnValidSubmit");
+                                                                                             }
+
+                                                                                             async Task UpdateUser()
+                                                                                             {
+                                                                                             //   newUser.UserId = 1234;
+                                                                                                 Console.WriteLine("[INFO]********************************************************************************");
+                                                                                                 Console.WriteLine(user.ToString());
+                                                                                             //   DummyUserService.registerUser(newUser);
+                                                                                                 await UserService.UpdateUser(user);
+                                                                                                 NavigationManager.NavigateTo("success");
+                                                                                             }
+
+                                                                                             void CancelRegistration()
+                                                                                             {
+                                                                                                 NavigationManager.NavigateTo("searchevents");
+                                                                                             }
+
+                                                                                             void Save()
+                                                                                             {
+                                                                                                 confirm = true;
+                                                                                             }
+
+                                                                                             void Cancel()
+                                                                                             {
+                                                                                             }
+
+                                                                                             protected override async Task OnInitializedAsync()
+                                                                                             {
+                                                                                                 user = await UserService.GetUserByEmailAsync(accessor.HttpContext.User.Identity.Name);
+                                                                                             }
+
+                                                                                         }

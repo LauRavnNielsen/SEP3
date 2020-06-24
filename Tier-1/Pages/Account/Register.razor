@@ -1,0 +1,103 @@
+@page "/register"
+@using Data
+@using Microsoft.AspNetCore.Blazor.Services
+@using System.Threading.Tasks
+@using System
+
+@inject DiningApp.Data.IUserService UserService
+@inject NavigationManager NavigationManager
+@inject ToastService toastService
+@inject IJSRuntime jsRuntime
+
+
+
+
+<h1 class="display-4">Create account</h1>
+ 
+
+  
+
+
+    <EditForm Model="@newUser" OnValidSubmit="@HandleValidSubmit" >
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText class="form-control" style="width: 400px" placeholder = "First name" id="firstName" @bind-Value="newUser.FirstName" />
+    <small id="emailHelp" class="form-text text-muted"> * Required: Enter your first name.</small><br><br>
+    <InputText class="form-control" style="width: 400px" placeholder = "Last name" id="lastName" @bind-Value="newUser.LastName" />
+    <small id="emailHelp" class="form-text text-muted"> * Required: Enter your last name.</small><br><br>
+    <InputText class="form-control" style="width: 400px" placeholder = "name@example.com" id="email" type="email" @bind-Value="newUser.EmailAddress" />
+    <small id="emailHelp" class="form-text text-muted"> * Required: Enter your e-mail address.</small><br><br>
+    <InputText class="form-control" style="width: 400px" placeholder = "Password" id="pw1" type="password" @bind-Value="newUser.Password"/>
+    <small id="emailHelp" class="form-text text-muted"> * Required: Enter your password.</small><br><br>
+    <InputText class="form-control" style="width: 400px" placeholder = "Password" id="pw2" type="password" @bind-Value="newUser.Password"/>
+    <small id="emailHelp" class="form-text text-muted"> * Required: Repeat your password.</small><br><br>
+    <InputText class="form-control" style="width: 400px" placeholder = "Date of birth" id="dob" @bind-Value="newUser.DOB" />
+    <small id="emailHelp" class="form-text text-muted"> * Required: Enter your date of birth.</small>
+    <br style = “line-height:100;”>
+   
+  
+   
+   @if(confirm==true){ 
+   <div class="row">
+       <div class="col-md-12 p-3 mb-2 bg-warning text-dark">
+           Confirm that entered information is correct 
+       </div>
+   </div>    
+   <button class="btn btn-primary"  @onclick="HandleValidSubmit">Confirm registration</button>
+   <button class="btn btn-primary"  @onclick="CancelRegistration">Cancel</button>
+   }
+   else{
+   <button class="btn btn-primary"  @onclick="Save">Save</button>
+   <button class="btn btn-primary"  @onclick="CancelRegistration">Cancel</button>
+
+   }
+   </EditForm>
+
+
+
+
+@code {
+
+    public bool confirm {get;set;}
+
+    private User newUser = new User();
+
+    public IList<User> users = new List<User>();
+   
+   
+ 
+    async Task HandleValidSubmit()
+    {
+        await RegisterUser();
+    }
+    
+    async Task RegisterUser()
+    { 
+              Console.WriteLine("[BUTTON] CONFIRM REGISTRATION");
+            
+                //DummyUserService.RegisterUser(newUser);
+               // DummyUserService.ValidateLogin(newUser.EmailAddress, newUser.Password);
+
+               await UserService.PostNewUser(newUser);
+               
+
+               NavigationManager.NavigateTo("searchevents");
+               toastService.ShowToast("You have successfully registered.", ToastLevel.Success);
+
+    }
+    void CancelRegistration()
+    {
+        NavigationManager.NavigateTo("searchevents");
+        toastService.ShowToast("You have NOT registered.", ToastLevel.Error);
+    } 
+    void Save()
+    {
+      confirm = true;
+    }
+
+    
+
+     
+   
+} 
